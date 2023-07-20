@@ -1,18 +1,45 @@
 from docx import Document
+from flask import Flask, request, render_template
+
+app = Flask(__name__)
 
 
+@app.route("/")
+def index():
+    # HTMLフォームを表示するためのテンプレートを返す
+    return render_template("input_form.html")
+
+
+@app.route("/get_text", methods=["POST"])
+def get_text():
+    # フォームから入力されたテキストを取得
+    input_text = request.form["input_text"]
+    filename = request.form["filename"]
+
+    # Word文書を生成して保存
+    generate_docx(filename, input_text)
+
+    # 応答メッセージを返す
+    return f"ファイル '{filename}.docx' が保存されました。"
+
+
+# 全文を改行及び文字数で区切ってリストに入れる
 def slice_txt_into_list(full_txt, slice_length):
     sliced_list = []
+    lines = full_txt.split("\n")  # 改行でテキストを分割
 
-    for i in range(0, len(full_txt), slice_length):
-        sliced_list.append(full_txt[i : i + slice_length])
+    for line in lines:
+        while len(line) > slice_length:
+            sliced_list.append(line[:slice_length])
+            line = line[slice_length:]
+
+        if line:
+            sliced_list.append(line)
 
     return sliced_list
 
 
-def main():
-    new_filename = input("作成するファイル名を入力: ")
-    full_txt = input("起案内容を入力:")
+def generate_docx(new_filename, full_txt):
     # 40字ごとに区切ってリストに入れる
     draft_content = slice_txt_into_list(full_txt, 40)
 
@@ -31,10 +58,11 @@ def main():
         # セル内のテキストを上書きする
         cell.text = draft
         line_num += 1
-        
+
     # 上書きした文書を保存
-    document.save(f"{new_filename}.docx")
+    output_path = f"{new_filename}.docx"
+    document.save(output_path)
 
 
 if __name__ == "__main__":
-    main()
+    app.run(host="127.0.0.1", port=8000, debug=True)

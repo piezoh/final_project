@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>テキスト入力フォーム</title>
+    <style>
+    textarea{
+        font-size: 150%;
+        resize:none;
+    }
+    </style>
+</head>
+<body>
+    <form action="/get_text" method="post">
+        <label for="input_text">テキスト入力:</label>
+        <textarea id="input_text" name="input_text" rows="14" cols="78"></textarea>
+        <br>
+        <label for="filename">ファイル名:</label>
+        <input type="text" id="filename" name="filename">
+        <br>
+        <input type="submit" value="送信">
+    </form>
+</body>
+</html>
