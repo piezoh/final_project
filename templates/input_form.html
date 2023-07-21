@@ -3,6 +3,9 @@
 <head>
     <title>テキスト入力フォーム</title>
     <style>
+    input{
+        font-size:100%;
+    }    
     textarea{
         font-size: 150%;
         resize:none;
@@ -11,13 +14,19 @@
 </head>
 <body>
     <form action="/get_text" method="post">
-        <label for="input_text">テキスト入力:</label>
+        <label for="doc_date">文書の日付:</label>
+        <input type="text" id="doc_date" name="doc_date">
+        <br>
+        <br>
+        <label for="input_text">本文入力:</label>
         <textarea id="input_text" name="input_text" rows="14" cols="78"></textarea>
+        <br>
         <br>
         <label for="filename">ファイル名:</label>
         <input type="text" id="filename" name="filename">
         <br>
-        <input type="submit" value="送信">
+        <br>
+        <input type="submit" value="Wordテンプレートに出力">
     </form>
 </body>
 </html>
