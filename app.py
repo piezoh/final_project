@@ -1,3 +1,4 @@
+import os
 from docx import Document
 from flask import Flask, request, render_template
 
@@ -15,11 +16,14 @@ def get_text():
     # フォームから入力されたテキストを取得
     doc_number = request.form["doc_number"]
     doc_date = request.form["doc_date"]
+    draft_date = request.form["draft_date"]
+    drafter = request.form["drafter"]
+    summary = request.form["summary"]
     input_text = request.form["input_text"]
     filename = request.form["filename"]
 
     # Word文書を生成して保存
-    generate_docx(filename, input_text, doc_date, doc_number)
+    generate_docx(filename, input_text, doc_date, doc_number, draft_date, drafter, summary)
 
     # 応答メッセージを返す
     return f"ファイル '{filename}.docx' が保存されました。"
@@ -41,7 +45,7 @@ def slice_txt_into_list(full_txt, slice_length):
     return sliced_list
 
 
-def generate_docx(new_filename, full_txt, date, doc_num):
+def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person, summary_content):
     # 40字ごとに区切ってリストに入れる
     draft_content = slice_txt_into_list(full_txt, 40)
 
@@ -63,18 +67,38 @@ def generate_docx(new_filename, full_txt, date, doc_num):
     # 文書の日付欄のセルに日付を入力
     date_cell.text = date
 
+    # 起案日&起案者欄のセルを取得
+    draft_date_cell = table.cell(3, 2)
+
+    # 起案日と起案者を同じセルに入力するため連結
+    drafter_date = drft_date + "\n" + "\n" + drft_person
+
+    # 起案日&起案者を入力
+    draft_date_cell.text = drafter_date
+
+    # 摘要欄のセルを取得
+    summary_content_cell = table.cell(4, 4)
+
+    # 摘要欄に内容を入力
+    summary_content_title = "摘要\n" + summary_content
+    summary_content_cell.text = summary_content_title
+
     # 本文を起案文書様式の６行目から入力
     line_num = 6
 
     for draft in draft_content:
         # 表のline_num行目、0列目にあるセルを取得する
         cell = table.cell(line_num, 0)
+
+        for paragraph in cell.paragraphs:
+            paragraph.text = paragraph.text.replace("\n", "")
         # セル内のテキストを上書きする
         cell.text = draft
         line_num += 1
 
-    # 上書きした文書を保存
-    output_path = f"{new_filename}.docx"
+    # 上書きした文書を保存、保存場所指定
+    output_folder = r"C:\Users\noriko\Desktop\test"
+    output_path = os.path.join(output_folder, f"{new_filename}.docx")
     document.save(output_path)
 
 

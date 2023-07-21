@@ -5,10 +5,13 @@
     <style>
     input{
         font-size:100%;
-    }    
+    }
     textarea{
         font-size: 150%;
         resize:none;
+    }
+    #draft_date{
+        font-size:100%;
     }
     </style>
 </head>
@@ -22,7 +25,19 @@
         <input type="text" id="doc_date" name="doc_date">
         <br>
         <br>
-        <label for="input_text">本文入力:</label>
+        <label for="draft_date">起案日 :</label>
+        <input type="text" id="draft_date" name="draft_date" value="起案 ">
+        <br>
+        <br>
+        <label for="drafter">起案者 :</label>
+        <input type="text" id="drafter" name="drafter">
+        <br>
+        <br>
+        <label for="summary">摘要 :</label>
+        <textarea id="summary" name="summary" rows="3" cols="40"></textarea>
+        <br>
+        <br>
+        <label for="input_text">本文入力 :</label>
         <textarea id="input_text" name="input_text" rows="14" cols="78"></textarea>
         <br>
         <br>
