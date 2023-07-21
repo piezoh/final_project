@@ -13,12 +13,13 @@ def index():
 @app.route("/get_text", methods=["POST"])
 def get_text():
     # フォームから入力されたテキストを取得
+    doc_number = request.form["doc_number"]
     doc_date = request.form["doc_date"]
     input_text = request.form["input_text"]
     filename = request.form["filename"]
 
     # Word文書を生成して保存
-    generate_docx(filename, input_text, doc_date)
+    generate_docx(filename, input_text, doc_date, doc_number)
 
     # 応答メッセージを返す
     return f"ファイル '{filename}.docx' が保存されました。"
@@ -40,7 +41,7 @@ def slice_txt_into_list(full_txt, slice_length):
     return sliced_list
 
 
-def generate_docx(new_filename, full_txt, date):
+def generate_docx(new_filename, full_txt, date, doc_num):
     # 40字ごとに区切ってリストに入れる
     draft_content = slice_txt_into_list(full_txt, 40)
 
@@ -49,6 +50,12 @@ def generate_docx(new_filename, full_txt, date):
 
     # 文書内の表を取得する
     table = document.tables[0]
+
+    # 文書番号欄のセルを取得
+    doc_num_cell = table.cell(1, 8)
+
+    # 文書番号欄の説に文書番号を入力
+    doc_num_cell.text = doc_num
 
     # 文書の日付欄のセルを取得
     date_cell = table.cell(2, 8)
