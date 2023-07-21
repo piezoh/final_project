@@ -71,7 +71,7 @@ def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person,
     draft_date_cell = table.cell(3, 2)
 
     # 起案日と起案者を同じセルに入力するため連結
-    drafter_date = drft_date + "\n" + "\n" + drft_person
+    drafter_date = drft_date + "\n"+"\n" + drft_person
 
     # 起案日&起案者を入力
     draft_date_cell.text = drafter_date
