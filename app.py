@@ -1,6 +1,7 @@
-import os
 from docx import Document
 from flask import Flask, request, render_template
+import tkinter.filedialog as filedialog
+from tkinter import Tk
 
 app = Flask(__name__)
 
@@ -21,13 +22,16 @@ def get_text():
     summary = request.form["summary"]
     authorizere = request.form["authorizere"]
     input_text = request.form["input_text"]
-    filename = request.form["filename"]
+
+    root = Tk()
+    root.withdraw()  # メインウィンドウを非表示にする
+    filepath = filedialog.asksaveasfilename(defaultextension=".docx", filetypes=[("Word Document", "*.docx")])
 
     # Word文書を生成して保存
-    generate_docx(filename, input_text, doc_date, doc_number, draft_date, drafter, summary, authorizere)
+    generate_docx(filepath, input_text, doc_date, doc_number, draft_date, drafter, summary, authorizere)
 
     # 応答メッセージを返す
-    return f"ファイル '{filename}.docx' が保存されました。"
+    return "ファイルが保存されました。"
 
 
 # 全文を改行及び文字数で区切ってリストに入れる
@@ -46,11 +50,11 @@ def slice_txt_into_list(full_txt, slice_length):
     return sliced_list
 
 
-def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person, summary_content, author):
+def generate_docx(output_path, full_txt, date, doc_num, drft_date, drft_person, summary_content, author):
     # 39字ごとに区切ってリストに入れる
     draft_content = slice_txt_into_list(full_txt, 39)
 
-    # 既存のWord文書を開く
+    # 決済者によってWordテンプレートを選択して開く
     if author == "町長":
         document = Document("起案文書様式.docx")
     elif author == "副町長":
@@ -77,7 +81,7 @@ def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person,
     draft_date_cell = table.cell(3, 2)
 
     # 起案日と起案者を同じセルに入力するため連結
-    drafter_date = drft_date + "\n" + "\n" + drft_person
+    drafter_date = "起案  " + drft_date + "\n" + "\n" + drft_person
 
     # 起案日&起案者を入力
     draft_date_cell.text = drafter_date
@@ -103,8 +107,6 @@ def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person,
         line_num += 1
 
     # 上書きした文書を保存、保存場所指定
-    output_folder = r"C:\Users\noriko\Desktop\test"
-    output_path = os.path.join(output_folder, f"{new_filename}.docx")
     document.save(output_path)
 
 
