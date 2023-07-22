@@ -19,11 +19,12 @@ def get_text():
     draft_date = request.form["draft_date"]
     drafter = request.form["drafter"]
     summary = request.form["summary"]
+    authorizere = request.form["authorizere"]
     input_text = request.form["input_text"]
     filename = request.form["filename"]
 
     # Word文書を生成して保存
-    generate_docx(filename, input_text, doc_date, doc_number, draft_date, drafter, summary)
+    generate_docx(filename, input_text, doc_date, doc_number, draft_date, drafter, summary, authorizere)
 
     # 応答メッセージを返す
     return f"ファイル '{filename}.docx' が保存されました。"
@@ -45,12 +46,17 @@ def slice_txt_into_list(full_txt, slice_length):
     return sliced_list
 
 
-def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person, summary_content):
+def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person, summary_content, author):
     # 40字ごとに区切ってリストに入れる
     draft_content = slice_txt_into_list(full_txt, 40)
 
     # 既存のWord文書を開く
-    document = Document("起案文書様式.docx")
+    if author == "町長":
+        document = Document("起案文書様式.docx")
+    elif author == "副町長":
+        document = Document("起案文書様式(副町長まで).docx")
+    else:
+        document = Document("起案文書様式(課長まで).docx")
 
     # 文書内の表を取得する
     table = document.tables[0]
@@ -71,7 +77,7 @@ def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person,
     draft_date_cell = table.cell(3, 2)
 
     # 起案日と起案者を同じセルに入力するため連結
-    drafter_date = drft_date + "\n"+"\n" + drft_person
+    drafter_date = drft_date + "\n" + "\n" + drft_person
 
     # 起案日&起案者を入力
     draft_date_cell.text = drafter_date

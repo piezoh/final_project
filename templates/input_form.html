@@ -22,6 +22,10 @@
             font-size: 120%;
         }
 
+        #option_a {}
+
+
+
         label {
             display: inline-block;
             text-align: right;
@@ -50,6 +54,16 @@
         <label for="drafter">起案者 :</label>
         <input type="text" id="drafter" name="drafter" style="width: 400px;">
         <br>
+        <br>
+
+        <div>
+            <label for="authorizere">最終決済者</label>
+            <select name="authorizere">
+                <option value="町長">町長</option>
+                <option value="副町長">副町長まで</option>
+                <option value="課長">課長まで</option>
+            </select>
+        </div>
         <br>
         <label for="summary">摘要 :</label>
         <textarea id="summary" name="summary" rows="2" cols="40"></textarea>
