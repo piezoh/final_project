@@ -33,7 +33,7 @@ def get_text():
 # 全文を改行及び文字数で区切ってリストに入れる
 def slice_txt_into_list(full_txt, slice_length):
     sliced_list = []
-    lines = full_txt.split("\n")  # 改行でテキストを分割
+    lines = full_txt.split("\r\n")  # 改行でテキストを分割
 
     for line in lines:
         while len(line) > slice_length:
@@ -47,8 +47,8 @@ def slice_txt_into_list(full_txt, slice_length):
 
 
 def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person, summary_content, author):
-    # 40字ごとに区切ってリストに入れる
-    draft_content = slice_txt_into_list(full_txt, 40)
+    # 39字ごとに区切ってリストに入れる
+    draft_content = slice_txt_into_list(full_txt, 39)
 
     # 既存のWord文書を開く
     if author == "町長":
@@ -97,7 +97,7 @@ def generate_docx(new_filename, full_txt, date, doc_num, drft_date, drft_person,
         cell = table.cell(line_num, 0)
 
         for paragraph in cell.paragraphs:
-            paragraph.text = paragraph.text.replace("\n", "")
+            paragraph.text = paragraph.text.replace("\r", "")
         # セル内のテキストを上書きする
         cell.text = draft
         line_num += 1
