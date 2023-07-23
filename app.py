@@ -38,6 +38,16 @@ def get_text():
     return "ファイルが保存されました。"
 
 
+def convert_to_fullwidth_numbers(text):
+    # 半角数字と対応する全角数字の辞書を定義
+    halfwidth_numbers = "0123456789"
+    fullwidth_numbers = "０１２３４５６７８９"
+    num_conversion = str.maketrans(halfwidth_numbers, fullwidth_numbers)
+
+    # 変換を行って返す
+    return text.translate(num_conversion)
+
+
 # 全文を改行及び文字数で区切ってリストに入れる
 def slice_txt_into_list(full_txt, slice_length):
     sliced_list = []
@@ -78,25 +88,32 @@ def generate_docx(output_path, full_txt, date, doc_num, drft_date, drft_person, 
     # 文書の日付欄のセルを取得
     date_cell = table.cell(2, 8)
 
-    # 文書の日付を和暦に変換
-    year = int(date.strftime("%Y")) - 2018
-    month = int(date.strftime("%m"))
-    day = int(date.strftime("%d"))
+    # 文書の日付を和暦に変換＆数字を全角に変換
+    doc_year_int = int(date.strftime("%Y"))
 
-    jpn_date = f"令和{year}年{month}月{day}日"
+    doc_year = convert_to_fullwidth_numbers(str(doc_year_int - 2018))
+    doc_month = convert_to_fullwidth_numbers(date.strftime("%m"))
+    doc_day = convert_to_fullwidth_numbers(date.strftime("%d"))
+
+    # 文書の日付を和暦に変換
+    jpn_doc_date = f"令和{doc_year}年{doc_month}月{doc_day}日"
 
     # 文書の日付欄のセルに日付を入力
-    date_cell.text = jpn_date
+    date_cell.text = jpn_doc_date
 
     # 起案日&起案者欄のセルを取得
     draft_date_cell = table.cell(3, 2)
 
-    # 文書の日付を和暦に変換
-    year = int(drft_date.strftime("%Y")) - 2018
-    month = int(drft_date.strftime("%m"))
-    day = int(drft_date.strftime("%d"))
+    # チェック
+    # 起案の日付を和暦に変換＆数字を全角に変換
+    drft_year_int = int(drft_date.strftime("%Y"))
 
-    jpn_drft_date = f"令和{year}年{month}月{day}日"
+    drft_year = convert_to_fullwidth_numbers(str(drft_year_int - 2018))
+    drft_month = convert_to_fullwidth_numbers(drft_date.strftime("%m"))
+    drft_day = convert_to_fullwidth_numbers(drft_date.strftime("%d"))
+
+    # 文書の日付を和暦に変換
+    jpn_drft_date = f"令和{drft_year}年{drft_month}月{drft_day}日"
 
     # 起案日と起案者を同じセルに入力するため連結
     drafter_date = "起案  " + jpn_drft_date + "\n" + "\n" + drft_person
