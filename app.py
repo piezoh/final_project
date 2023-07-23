@@ -1,7 +1,8 @@
 from docx import Document
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, current_app
 import tkinter.filedialog as filedialog
 from tkinter import Tk
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -16,8 +17,10 @@ def index():
 def get_text():
     # フォームから入力されたテキストを取得
     doc_number = request.form["doc_number"]
-    doc_date = request.form["doc_date"]
-    draft_date = request.form["draft_date"]
+    doc_date_str = request.form["doc_date"]
+    doc_date = datetime.strptime(doc_date_str, "%Y-%m-%d")
+    draft_date_str = request.form["draft_date"]
+    draft_date = datetime.strptime(draft_date_str, "%Y-%m-%d")
     drafter = request.form["drafter"]
     summary = request.form["summary"]
     authorizere = request.form["authorizere"]
@@ -28,7 +31,8 @@ def get_text():
     filepath = filedialog.asksaveasfilename(defaultextension=".docx", filetypes=[("Word Document", "*.docx")])
 
     # Word文書を生成して保存
-    generate_docx(filepath, input_text, doc_date, doc_number, draft_date, drafter, summary, authorizere)
+    with current_app.app_context():
+        generate_docx(filepath, input_text, doc_date, doc_number, draft_date, drafter, summary, authorizere)
 
     # 応答メッセージを返す
     return "ファイルが保存されました。"
@@ -74,14 +78,28 @@ def generate_docx(output_path, full_txt, date, doc_num, drft_date, drft_person, 
     # 文書の日付欄のセルを取得
     date_cell = table.cell(2, 8)
 
+    # 文書の日付を和暦に変換
+    year = int(date.strftime("%Y")) - 2018
+    month = int(date.strftime("%m"))
+    day = int(date.strftime("%d"))
+
+    jpn_date = f"令和{year}年{month}月{day}日"
+
     # 文書の日付欄のセルに日付を入力
-    date_cell.text = date
+    date_cell.text = jpn_date
 
     # 起案日&起案者欄のセルを取得
     draft_date_cell = table.cell(3, 2)
 
+    # 文書の日付を和暦に変換
+    year = int(drft_date.strftime("%Y")) - 2018
+    month = int(drft_date.strftime("%m"))
+    day = int(drft_date.strftime("%d"))
+
+    jpn_drft_date = f"令和{year}年{month}月{day}日"
+
     # 起案日と起案者を同じセルに入力するため連結
-    drafter_date = "起案  " + drft_date + "\n" + "\n" + drft_person
+    drafter_date = "起案  " + jpn_drft_date + "\n" + "\n" + drft_person
 
     # 起案日&起案者を入力
     draft_date_cell.text = drafter_date
